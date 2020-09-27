@@ -12,7 +12,7 @@ var Log Logprint
 func InitLoger(name string) {
 	switch name {
 	case "file":
-		f, err := os.OpenFile("./a.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 655)
+		f, err := os.OpenFile("./a.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
 			return
 		}
@@ -51,10 +51,10 @@ func Fatal(args ...interface{}) {
 	1、当业务打日志的时候调用方法，我们把需要写入日志的相关数据写入到chan（队列）
 	2、然后我们在后台起一个线程不断从chan里面获取日志，最终写入文件中
 */
-func Writefilelog(format string, Logdatachan chan *string, arg ...interface{}) {
-	msg := fmt.Sprintf(format, arg...)
+func Writefilelog(logdatachan chan *string, arg ...interface{}) {
+	msg := fmt.Sprint(arg...)
 	//_, err := fmt.Fprintf(file, format, arg...)
-	Logdatachan <- &msg
+	logdatachan <- &msg
 }
 
 func Gettime() string {

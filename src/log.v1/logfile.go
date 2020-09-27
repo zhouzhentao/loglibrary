@@ -10,19 +10,19 @@ type Filelog struct {
 	filepath    string
 	format      string
 	loglevel    string
-	Logdatachan chan *string
+	logdatachan chan *string
 }
 
 func Newfilelog(file *os.File, filepath string) *Filelog {
-	return &Filelog{file: file, filepath: filepath, Logdatachan: make(chan *string, 50000)}
+	return &Filelog{file: file, filepath: filepath, logdatachan: make(chan *string, 50000)}
 }
 
 func (f *Filelog) Debug(args ...interface{}) error {
 	f.loglevel = "Debug"
 	f.format = Logformat(f.loglevel)
-	Writefilelog(f.format, f.Logdatachan, args...)
+	Writefilelog(f.logdatachan, args...)
 	defer f.file.Close()
-	for data := range f.Logdatachan {
+	for data := range f.logdatachan {
 		_, err := fmt.Fprintf(f.file, f.format, *data)
 		if err != nil {
 			return err
@@ -34,9 +34,9 @@ func (f *Filelog) Debug(args ...interface{}) error {
 func (f *Filelog) Info(args ...interface{}) error {
 	f.loglevel = "Info"
 	f.format = Logformat(f.loglevel)
-	Writefilelog(f.format, f.Logdatachan, args...)
+	Writefilelog(f.logdatachan, args...)
 	defer f.file.Close()
-	for data := range f.Logdatachan {
+	for data := range f.logdatachan {
 		_, err := fmt.Fprintf(f.file, f.format, *data)
 		if err != nil {
 			return err
@@ -48,9 +48,9 @@ func (f *Filelog) Info(args ...interface{}) error {
 func (f *Filelog) Warn(args ...interface{}) error {
 	f.loglevel = "Warn"
 	f.format = Logformat(f.loglevel)
-	Writefilelog(f.format, f.Logdatachan, args...)
+	Writefilelog(f.logdatachan, args...)
 	defer f.file.Close()
-	for data := range f.Logdatachan {
+	for data := range f.logdatachan {
 		_, err := fmt.Fprintf(f.file, f.format, *data)
 		if err != nil {
 			return err
@@ -62,9 +62,9 @@ func (f *Filelog) Warn(args ...interface{}) error {
 func (f *Filelog) Error(args ...interface{}) error {
 	f.loglevel = "Error"
 	f.format = Logformat(f.loglevel)
-	Writefilelog(f.format, f.Logdatachan, args...)
+	Writefilelog(f.logdatachan, args...)
 	defer f.file.Close()
-	for data := range f.Logdatachan {
+	for data := range f.logdatachan {
 		_, err := fmt.Fprintf(f.file, f.format, *data)
 		if err != nil {
 			return err
@@ -76,9 +76,9 @@ func (f *Filelog) Error(args ...interface{}) error {
 func (f *Filelog) Fatal(args ...interface{}) error {
 	f.loglevel = "Fatal"
 	f.format = Logformat(f.loglevel)
-	Writefilelog(f.format, f.Logdatachan, args...)
+	Writefilelog(f.logdatachan, args...)
 	defer f.file.Close()
-	for data := range f.Logdatachan {
+	for data := range f.logdatachan {
 		_, err := fmt.Fprintf(f.file, f.format, *data)
 		if err != nil {
 			return err
